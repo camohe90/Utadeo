@@ -11,10 +11,9 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     using Counters for Counters.Counter;
 
     struct contractInfo{
-        uint duration;
-        string coverage;
         string uri;
         address autor;
+        string hash_data;
         
     }
 
@@ -35,11 +34,9 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         artCollection[tokenId] = uri;
     }
 
-    function createContract(uint256 _tokenId, uint _duration, string memory _coverage, address _autor, address buyer) public {
-        contractRegister[_tokenId].duration =_duration;
-        contractRegister[_tokenId].coverage =_coverage;
+    function createContract(uint256 _tokenId, address _autor, address buyer,string memory hash_data, string memory uri) public {
         contractRegister[_tokenId].autor =_autor;
-        contractRegister[_tokenId].uri = artCollection[_tokenId];
+        contractRegister[_tokenId].uri = uri;
         transferFrom(msg.sender, buyer,_tokenId );   
     }
 
