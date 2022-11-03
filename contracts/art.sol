@@ -37,6 +37,7 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     function createContract(uint256 _tokenId, address _autor, address buyer,string memory hash_data, string memory uri) public {
         contractRegister[_tokenId].autor =_autor;
         contractRegister[_tokenId].uri = uri;
+        contractRegister[_tokenId].hash_data = hash_data;
         transferFrom(msg.sender, buyer,_tokenId );   
     }
 

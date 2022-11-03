@@ -1,6 +1,8 @@
 from brownie import ArtContract, accounts, config
 from datetime import date
 from fpdf import FPDF
+import hashlib
+import os
 
 
 texto_inicial = '''CONTRATO DE COMPRAVENTA Y CESIÓN DE DERECHOS
@@ -128,8 +130,14 @@ def create_contract():
     
     pdf.output('contratos/contrato_token'+str(tokenId)+'.pdf')  
 
+    #st=os.stat('contratos/contrato_token'+str(tokenId)+'.pdf')
+    sha256_hash = hashlib.sha256()
+    with open('contratos/contrato_token'+str(tokenId)+'.pdf',"rb") as f:
+            for byte_block in iter(lambda: f.read(4096),b""):
+                    sha256_hash.update(byte_block)
+    hash_data=str(sha256_hash.hexdigest())
 
-    artContract.createContract(tokenId, autor, buyer, hash_data uri,{"from":account})
+    artContract.createContract(tokenId, autor, buyer, hash_data, uri,{"from":account})
        
 def main():
     create_contract()
