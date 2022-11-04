@@ -12,7 +12,8 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
 
     struct contractInfo{
         string uri;
-        address autor;
+        address owner;
+        address buyer;
         string hash_data;
         
     }
@@ -24,7 +25,7 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
 
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("MyToken", "MTK") {}
+    constructor() ERC721("UTADEONFT", "UTD") {}
 
     function safeMint(string memory uri) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
@@ -34,8 +35,10 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         artCollection[tokenId] = uri;
     }
 
-    function createContract(uint256 _tokenId, address _autor, address buyer,string memory hash_data, string memory uri) public {
-        contractRegister[_tokenId].autor =_autor;
+    function createContract(uint256 _tokenId, address buyer,string memory hash_data, string memory uri) public {
+        require(msg.sender == ownerOf(_tokenId), "No eres el propietario del NFT" );
+        contractRegister[_tokenId].owner = msg.sender;
+        contractRegister[_tokenId].buyer = buyer;
         contractRegister[_tokenId].uri = uri;
         contractRegister[_tokenId].hash_data = hash_data;
         transferFrom(msg.sender, buyer,_tokenId );   
