@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
-    using Counters for Counters.Counter;
+    uint256 private _nextTokenId;
 
     struct contractInfo{
         string uri;
@@ -21,21 +20,19 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     mapping(uint => string) public artCollection;
     mapping(uint => contractInfo) public contractRegister;
 
-
-
-    Counters.Counter private _tokenIdCounter;
-
-    constructor() ERC721("UTADEONFT", "UTD") {}
+    constructor(address initialOwner)
+        ERC721("UTADEONFT", "UTD")
+        Ownable(initialOwner)
+    {}
 
     function safeMint(string memory uri) public onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, uri);
         artCollection[tokenId] = uri;
     }
 
-    function createContract(uint256 _tokenId, address buyer,string memory hash_data, string memory uri) public {
+     function createContract(uint256 _tokenId, address buyer,string memory hash_data, string memory uri) public {
         require(msg.sender == ownerOf(_tokenId), "No eres el propietario del NFT" );
         contractRegister[_tokenId].owner = msg.sender;
         contractRegister[_tokenId].buyer = buyer;
@@ -46,10 +43,6 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
 
     // The following functions are overrides required by Solidity.
 
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-    }
-
     function tokenURI(uint256 tokenId)
         public
         view
@@ -57,5 +50,14 @@ contract ArtContract is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
         returns (string memory)
     {
         return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
